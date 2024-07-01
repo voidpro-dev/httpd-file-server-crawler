@@ -75,9 +75,12 @@ for file in files:
                     os.mkdir(check_folder)
                 except:
                     pass
+        if os.path.isfile(target+filepath):
+            return
         while True:
             try:
-                open(target+filepath, "wb").write(session.get(_file).content)
+                response = session.get(_file)
+                open(target+filepath, "wb").write(response.content)
                 break
             except:
                 time.sleep(3)
