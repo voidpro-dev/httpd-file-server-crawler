@@ -56,7 +56,7 @@ for file in files:
                     os.mkdir(check_folder)
                 except:
                     pass
-        open(target+filepath, "wb").write(session.get(url).content)
+        open(target+filepath, "wb").write(session.get(file).content)
     thread = threading.Thread(target=worker, daemon=True)
     thread.start()
     threads.append(thread)
