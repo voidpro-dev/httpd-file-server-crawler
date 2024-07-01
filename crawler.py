@@ -12,6 +12,9 @@ url = "http://ro4h37fieb6oyfrwoi5u5wpvaalnegsxzxnwzwzw43anxqmv6hjcsfyd.onion/dwa
 target = "/root/cdn/dwango"
 
 files = []
+#all = [a.get("href") for a in BeautifulSoup(session.get(url).text, "html.parser").find_all("a") if not a.get("href") == "../"]
+#files += [url+a for a in all if not a.endswith("/")]
+#folders = [url+a for a in all if a.endswith("/")]
 folders = [url+"/"]
 
 while folders:
@@ -19,14 +22,14 @@ while folders:
     threads = []
     for folder in folders:
         print(f"Getting {urllib.parse.unquote(folder.replace(url, ''))}")
-        def worker():
-            for a in BeautifulSoup(session.get(folder).text, "html.parser").find_all("a"):
+        def worker(_folder):
+            for a in BeautifulSoup(session.get(_folder).text, "html.parser").find_all("a"):
                 if not a.get("href") == "../":
                     if a.get("href").endswith("/"):
-                        new_folders.append(folder+a.get("href"))
+                        new_folders.append(_folder+a.get("href"))
                     else:
-                        files.append(folder+a.get("href"))
-        thread = threading.Thread(target=worker, daemon=True)
+                        files.append(_folder+a.get("href"))
+        thread = threading.Thread(target=worker, args=[folder], daemon=True)
         thread.start()
         threads.append(thread)
         while threading.active_count() > 50:
@@ -42,12 +45,11 @@ if target.endswith("/"):
 if not os.path.isdir(target):
     print("unknown target folder")
     exit()
-
 threads = []
 for file in files:
     print(f"Saving {urllib.parse.unquote(file.replace(url, ''))}")
-    def worker():
-        filepath = urllib.parse.unquote(file.replace(url, ""))
+    def worker(_file):
+        filepath = urllib.parse.unquote(_file.replace(url, ""))
         folder = filepath.split("/")
         for n in range(len(folder)-1):
             check_folder = target+"/".join(folder[0:n+1])
@@ -56,8 +58,8 @@ for file in files:
                     os.mkdir(check_folder)
                 except:
                     pass
-        open(target+filepath, "wb").write(session.get(file).content)
-    thread = threading.Thread(target=worker, daemon=True)
+        open(target+filepath, "wb").write(session.get(_file).content)
+    thread = threading.Thread(target=worker, args=[file], daemon=True)
     thread.start()
     threads.append(thread)
     while threading.active_count() > 50:
@@ -65,5 +67,3 @@ for file in files:
 
 for thread in threads:
     thread.join()
-
-print("Done! <3")
