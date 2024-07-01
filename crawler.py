@@ -5,7 +5,20 @@ import threading
 import urllib.parse
 from bs4 import BeautifulSoup
 
+class TimeoutHTTPAdapter(requests.adapters.HTTPAdapter):
+    def __init__(self, *args, **kwargs):
+        if "timeout" in kwargs:
+            self.timeout = kwargs["timeout"]
+        del kwargs["timeout"]
+        super().__init__(*args, **kwargs)
+    def send(self, request, **kwargs):
+        timeout = kwargs.get("timeout")
+        if timeout is None and hasattr(self, 'timeout'):
+            kwargs["timeout"] = self.timeout
+        return super().send(request, **kwargs)
+
 session = requests.Session()
+session.mount("http://", TimeoutHTTPAdapter(max_retries=5, timeout=5))
 session.proxies.update({"http": "socks5h://localhost:9050"})
 
 url = "http://ro4h37fieb6oyfrwoi5u5wpvaalnegsxzxnwzwzw43anxqmv6hjcsfyd.onion/dwango"
@@ -26,7 +39,13 @@ while folders:
     for folder in folders:
         print(f"Getting {urllib.parse.unquote(folder.replace(url, ''))}")
         def worker(_folder):
-            for a in BeautifulSoup(session.get(_folder).text, "html.parser").find_all("a"):
+            while True:
+                try:
+                    response = session.get(_folder).text
+                    break
+                except:
+                    time.sleep(3)
+            for a in BeautifulSoup(response, "html.parser").find_all("a"):
                 if not a.get("href") == "../":
                     if a.get("href").endswith("/"):
                         new_folders.append(_folder+a.get("href"))
@@ -56,7 +75,12 @@ for file in files:
                     os.mkdir(check_folder)
                 except:
                     pass
-        open(target+filepath, "wb").write(session.get(_file).content)
+        while True:
+            try:
+                open(target+filepath, "wb").write(session.get(_file).content)
+                break
+            except:
+                time.sleep(3)
     thread = threading.Thread(target=worker, args=[file], daemon=True)
     thread.start()
     threads.append(thread)
