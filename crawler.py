@@ -12,9 +12,6 @@ url = "http://ro4h37fieb6oyfrwoi5u5wpvaalnegsxzxnwzwzw43anxqmv6hjcsfyd.onion/dwa
 target = "/root/cdn/dwango"
 
 files = []
-#all = [a.get("href") for a in BeautifulSoup(session.get(url).text, "html.parser").find_all("a") if not a.get("href") == "../"]
-#files += [url+a for a in all if not a.endswith("/")]
-#folders = [url+a for a in all if a.endswith("/")]
 folders = [url+"/"]
 
 while folders:
@@ -45,6 +42,7 @@ if target.endswith("/"):
 if not os.path.isdir(target):
     print("unknown target folder")
     exit()
+
 threads = []
 for file in files:
     print(f"Saving {urllib.parse.unquote(file.replace(url, ''))}")
@@ -67,3 +65,5 @@ for file in files:
 
 for thread in threads:
     thread.join()
+
+print("Done! <3")
