@@ -14,6 +14,12 @@ target = "/root/cdn/dwango"
 files = []
 folders = [url+"/"]
 
+if target.endswith("/"):
+    target = target[:-1]
+if not os.path.isdir(target):
+    print("unknown target folder")
+    exit()
+
 while folders:
     new_folders = []
     threads = []
@@ -36,12 +42,6 @@ while folders:
     folders = new_folders
 
 print(len(files), "in this file server")
-
-if target.endswith("/"):
-    target = target[:-1]
-if not os.path.isdir(target):
-    print("unknown target folder")
-    exit()
 
 threads = []
 for file in files:
