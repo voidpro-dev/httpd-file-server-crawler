@@ -55,7 +55,7 @@ while folders:
         thread.start()
         threads.append(thread)
         while threading.active_count() > 50:
-            time.sleep(1)
+            time.sleep(0.1)
     for thread in threads:
         thread.join()
     folders = new_folders
@@ -85,7 +85,7 @@ for file in files:
     thread.start()
     threads.append(thread)
     while threading.active_count() > 50:
-        time.sleep(1)
+        time.sleep(0.1)
 
 for thread in threads:
     thread.join()
