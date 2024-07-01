@@ -18,7 +18,7 @@ class TimeoutHTTPAdapter(requests.adapters.HTTPAdapter):
         return super().send(request, **kwargs)
 
 session = requests.Session()
-session.mount("http://", TimeoutHTTPAdapter(max_retries=5, timeout=5))
+session.mount("http://", TimeoutHTTPAdapter(max_retries=5, timeout=60))
 session.proxies.update({"http": "socks5h://localhost:9050"})
 
 url = "http://ro4h37fieb6oyfrwoi5u5wpvaalnegsxzxnwzwzw43anxqmv6hjcsfyd.onion/dwango"
