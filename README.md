@@ -15,5 +15,6 @@
    windows : py crawler.py   
 
 # requirements
-pip : requests, bs4, pysocks (only if you use socks proxy)
+runtime : python3
+pip : requests, bs4, pysocks (only if you use socks proxy)<br>
 other : torproxy (if you want to clone file server which on tor network
