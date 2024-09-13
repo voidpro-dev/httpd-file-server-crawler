@@ -11,7 +11,7 @@
 3. replace website url in crawler.py with which you want to clone
 4. replace target folder in crawler.py with where you want to save
 5. run crawler.py<br>
-   linux : python3 crawler.py
+   linux : python3 crawler.py<br>
    windows : py crawler.py   
 
 # requirements
